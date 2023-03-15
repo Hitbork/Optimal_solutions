@@ -1,0 +1,11 @@
+# ninja log v5
+1	578	7005768160536011	CMakeFiles/Optimal_solutions.dir/main.cpp.obj	a4ad5cb760ce9ca7
+581	766	7005768162300429	Optimal_solutions.exe	b59cc19ca76f409c
+7	787	7005770586794046	CMakeFiles/Optimal_solutions.dir/main.cpp.obj	a4ad5cb760ce9ca7
+788	902	7005770587870767	Optimal_solutions.exe	b59cc19ca76f409c
+3	1118	7005776855117754	CMakeFiles/Optimal_solutions.dir/main.cpp.obj	a4ad5cb760ce9ca7
+1119	1295	7005776856869397	Optimal_solutions.exe	b59cc19ca76f409c
+3	973	7005777384888561	CMakeFiles/Optimal_solutions.dir/main.cpp.obj	a4ad5cb760ce9ca7
+974	1191	7005777387028201	Optimal_solutions.exe	b59cc19ca76f409c
+3	756	7005779303266386	CMakeFiles/Optimal_solutions.dir/main.cpp.obj	a4ad5cb760ce9ca7
+757	970	7005779305288364	Optimal_solutions.exe	b59cc19ca76f409c

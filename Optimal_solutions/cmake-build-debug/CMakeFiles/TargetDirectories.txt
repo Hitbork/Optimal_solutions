@@ -1,0 +1,3 @@
+C:/Math-modeling-prs/Math-modeling-pr4/Optimal_solutions/cmake-build-debug/CMakeFiles/Optimal_solutions.dir
+C:/Math-modeling-prs/Math-modeling-pr4/Optimal_solutions/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Math-modeling-prs/Math-modeling-pr4/Optimal_solutions/cmake-build-debug/CMakeFiles/rebuild_cache.dir
