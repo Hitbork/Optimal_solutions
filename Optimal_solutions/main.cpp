@@ -8,6 +8,16 @@ std::vector<float> tableOfConsumers;
 std::vector<std::vector<float>> referencePlan;
 
 
+// Function to fill reference plan
+void fill_reference_plan() {
+    for (int i = 0; i < referencePlan.size(); i++) {
+        for (int j = 0; j < referencePlan[i].size(); j++) {
+            referencePlan[i][j] = 0;
+        }
+    }
+}
+
+
 // Function to input required info
 void input_info() {
     std::cout << "Input sides of rectangle in cost matrix!\n";
@@ -43,12 +53,20 @@ void input_info() {
     for (int i = 0; i < length - 1; i++) {
         std::cin >> tableOfConsumers[i];
     }
+
+    fill_reference_plan();
 }
 
 
 // Function to do northwest corner method
 void northwest_corner_method() {
+    // Creating iterators
+    int i = 0, j = 0;
 
+    // Creating cycle
+    for (int k = 0; k < table.size() + table[0].size() - 1; k++) {
+
+    }
 }
 
 
