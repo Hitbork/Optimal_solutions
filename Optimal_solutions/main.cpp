@@ -5,6 +5,7 @@
 std::vector<std::vector<float>> table;
 std::vector<float> tableOfManufacturers;
 std::vector<float> tableOfConsumers;
+std::vector<std::vector<float>> referencePlan;
 
 
 // Function to input required info
@@ -24,6 +25,7 @@ void input_info() {
     std::cin >> length >> width;
 
     table.resize(width-1);
+    referencePlan.resize(width-1);
     tableOfManufacturers.resize(width-1);
     tableOfConsumers.resize(length-1);
 
@@ -31,6 +33,7 @@ void input_info() {
     std::cout << "\nInput whole cost of matrix:\n";
     for (int i = 0; i < width - 1; i++) {
         table[i].resize(length-1);
+        referencePlan[i].resize(length-1);
         for (int j = 0; j < length - 1; j++) {
             std::cin >> table[i][j];
         }
@@ -43,19 +46,23 @@ void input_info() {
 }
 
 
+// Function to do northwest corner method
 void northwest_corner_method() {
 
 }
 
 
+// Function to do minimum elements method
 void minimum_elements_method() {
 
 }
 
 
+// Function to do Q factor method
 void Q_factor_method() {
 
 }
+
 
 int main() {
     // Greetings
