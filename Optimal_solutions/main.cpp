@@ -12,17 +12,95 @@ std::vector<std::vector<float>> referencePlan;
 void fill_reference_plan() {
     for (int i = 0; i < referencePlan.size(); i++) {
         for (int j = 0; j < referencePlan[i].size(); j++) {
-            referencePlan[i][j] = 0;
+            referencePlan[i][j] = -1;
         }
     }
 }
 
 
+// Function to output cost matrix and reference plan
+void output_cost_matrix_and_reference_plan() {
+    std::cout << "\tCost matrix:";
+    for (int i = 0; i < table.size() + 2; i++) {
+        std::cout << "\t";
+    }
+    std::cout << "Reference plan:\n";
+
+    for (int i = 0; i < table.size(); i++) {
+        for (int j = 0; j < table[i].size(); j++) {
+            std::cout << table[i][j] << "\t";
+        }
+        std::cout << tableOfManufacturers[i] << "\t\t";
+
+        for (int j = 0; j < referencePlan[i].size(); j++) {
+            if (referencePlan[i][j] == -1) {
+                std::cout << ".";
+            } else {
+                std::cout << referencePlan[i][j];
+            }
+            std::cout << "\t";
+        }
+
+        std::cout << tableOfManufacturers[i] << "\n";
+    }
+
+    for (int c = 0; c < 2; c++) {
+        for (int i = 0; i < tableOfConsumers.size(); i++) {
+            std::cout << tableOfConsumers[i] << "\t";
+        }
+        std::cout << ".\t\t";
+    }
+
+    std::cout << "\n\n";
+}
+
+
+// Function to output result of function
+void output_result_of_function() {
+    // Greetings
+    std::cout << "\n";
+    std::cout << "F(x) =";
+
+    // Creating var to calculate summary
+    float Fx = 0;
+    bool isFirst = true;
+    int counter = 0;
+
+    for (int i = 0; i < table.size(); i++) {
+        for (int j = 0; j < table[i].size(); j++) {
+            if (referencePlan[i][j] != -1) {
+                Fx += referencePlan[i][j] * table[i][j];
+                if (counter == 3) {
+                    std::cout << "\n";
+                    counter = 0;
+                }
+                if (isFirst) {
+                    isFirst = false;
+                    std::cout << " ";
+                } else {
+                    std::cout << " + ";
+                }
+                std::cout << table[i][j] << " * " << referencePlan[i][j];
+                counter++;
+            }
+        }
+    }
+    std::cout << " = " << Fx;
+    std::cout << "\n\n";
+}
+
+
+// Function to copy manufacturers and consumers
+void copy_tables_of_manufacturers_and_consumers(std::vector<float> &copyOfManufacturers, std::vector<float> &copyOfConsumers) {
+    copyOfManufacturers = tableOfManufacturers;
+    copyOfConsumers = tableOfConsumers;
+}
+
 // Function to input required info
 void input_info() {
     std::cout << "Input sides of rectangle in cost matrix!\n";
     std::cout << "\nExample:\n";
-    std::cout << " Cost matrix:\n";
+    std::cout << "\tCost matrix:\n";
     std::cout << " 6\t5\t8\t7\t14\n";
     std::cout << " 3\t6\t4\t2\t12\n";
     std::cout << " 9\t1\t3\t6\t8\n";
@@ -63,10 +141,31 @@ void northwest_corner_method() {
     // Creating iterators
     int i = 0, j = 0;
 
+    // Creating same vectors to copy tables
+    std::vector<float> copyOfTableManufacturers(tableOfManufacturers.size()),
+        copyOfTableConsumers(tableOfConsumers.size());
+
+    copy_tables_of_manufacturers_and_consumers(copyOfTableManufacturers, copyOfTableConsumers);
+
     // Creating cycle
     for (int k = 0; k < table.size() + table[0].size() - 1; k++) {
+        referencePlan[i][j] = std::min(copyOfTableManufacturers[i], copyOfTableConsumers[j]);
 
+        copyOfTableManufacturers[i] -= referencePlan[i][j];
+        copyOfTableConsumers[j] -= referencePlan[i][j];
+
+        if (copyOfTableManufacturers[i] == 0) {
+            i++;
+        } else {
+            j++;
+        }
     }
+
+    std::cout << "\n\n";
+
+    output_cost_matrix_and_reference_plan();
+
+    output_result_of_function();
 }
 
 
