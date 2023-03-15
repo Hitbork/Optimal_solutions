@@ -96,6 +96,49 @@ void copy_tables_of_manufacturers_and_consumers(std::vector<float> &copyOfManufa
     copyOfConsumers = tableOfConsumers;
 }
 
+
+// Function to check if consumers and manufacturers arent empty
+bool copies_arent_empty(std::vector<float> &copyOfTableManufacturers, std::vector<float> &copyOfTableConsumers) {
+    for (int i = 0; i < copyOfTableConsumers.size(); i++) {
+        if (copyOfTableConsumers[i] > 0) {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < copyOfTableManufacturers.size(); i++) {
+        if (copyOfTableManufacturers[i] > 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// Function to find min in cost of matrix
+void find_min(int indexesOfMin[]) {
+    float min = table[0][0];
+    indexesOfMin[0] = 0;
+    indexesOfMin[1] = 0;
+
+    for (int i = 0; i < table.size(); i++) {
+        for (int j = 0; j < table[i].size(); j++) {
+            if (table[i][j] < min) {
+                min = table[i][j];
+                indexesOfMin[0] = i;
+                indexesOfMin[1] = j;
+            }
+        }
+    }
+}
+
+
+void finding_coefficient(int indexesOfMin[], std::vector<std::vector<float>> &copyOfTable, std::vector<float> &copyOfTableManufacturers, std::vector<float> &copyOfTableConsumers) {
+    referencePlan[indexesOfMin[0]][indexesOfMin[1]] = std::min(copyOfTableManufacturers[indexesOfMin[0]], copyOfTableConsumers[indexesOfMin[1]]);
+
+
+}
+
 // Function to input required info
 void input_info() {
     std::cout << "Input sides of rectangle in cost matrix!\n";
@@ -131,8 +174,6 @@ void input_info() {
     for (int i = 0; i < length - 1; i++) {
         std::cin >> tableOfConsumers[i];
     }
-
-    fill_reference_plan();
 }
 
 
@@ -171,7 +212,22 @@ void northwest_corner_method() {
 
 // Function to do minimum elements method
 void minimum_elements_method() {
+    // Creating same vectors to copy tables
+    std::vector<float> copyOfTableManufacturers(tableOfManufacturers.size()),
+            copyOfTableConsumers(tableOfConsumers.size());
 
+    copy_tables_of_manufacturers_and_consumers(copyOfTableManufacturers, copyOfTableConsumers);
+
+
+    std::vector<std::vector<float>> copyOfTable = table;
+
+    // Cycle
+    int indexesOfMin[2];
+    while (copies_arent_empty(copyOfTableManufacturers, copyOfTableConsumers)) {
+        find_min(indexesOfMin);
+
+        finding_coefficient(indexesOfMin, copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
+    }
 }
 
 
@@ -204,6 +260,8 @@ int main() {
         // Check if choice is to exit the program
         if (choice == 4)
             break;
+
+        fill_reference_plan();
 
         // Check choice method
         switch (choice) {
