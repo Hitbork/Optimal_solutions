@@ -342,7 +342,19 @@ void minimum_elements_method() {
 
 // Function to do Q factor method
 void Q_factor_method() {
+    // Creating same vectors to copy tables
+    std::vector<float> copyOfTableManufacturers(tableOfManufacturers.size()),
+            copyOfTableConsumers(tableOfConsumers.size());
 
+    copy_tables_of_manufacturers_and_consumers(copyOfTableManufacturers, copyOfTableConsumers);
+
+    std::vector<std::vector<float>> copyOfTable = table;
+
+    output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
+
+    while (copies_arent_empty(copyOfTableManufacturers, copyOfTableConsumers)) {
+
+    }
 }
 
 
