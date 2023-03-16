@@ -55,6 +55,61 @@ void output_cost_matrix_and_reference_plan() {
 }
 
 
+// Overload of output function
+void output_cost_matrix_and_reference_plan(std::vector<std::vector<float>> &copyOfTable, std::vector<float> &copyOfManufacturers, std::vector<float> &copyOfConsumers) {
+    std::cout << "\n";
+    std::cout << "\tCost matrix:";
+    for (int i = 0; i < copyOfTable.size() + 2; i++) {
+        std::cout << "\t";
+    }
+    std::cout << "Reference plan:\n";
+
+    for (int i = 0; i < table.size(); i++) {
+        for (int j = 0; j < table[i].size(); j++) {
+            if (copyOfTable[i][j] != 0) {
+                std::cout << copyOfTable[i][j] << "\t";
+            } else {
+                std::cout << "-" << "\t";
+            }
+        }
+
+        if (copyOfManufacturers[i] != 0) {
+            std::cout << copyOfManufacturers[i] << "\t\t";
+        } else  {
+            std::cout << "-" << "\t\t";
+        }
+
+        for (int j = 0; j < referencePlan[i].size(); j++) {
+            if (referencePlan[i][j] == -1) {
+                std::cout << ".";
+            } else {
+                std::cout << referencePlan[i][j];
+            }
+            std::cout << "\t";
+        }
+
+        std::cout << tableOfManufacturers[i] << "\n";
+    }
+
+    for (int i = 0; i < copyOfConsumers.size(); i++) {
+        if (copyOfConsumers[i] != 0) {
+            std::cout << copyOfConsumers[i] << "\t";
+        } else {
+            std::cout << "-\t";
+        }
+    }
+
+    std::cout << ".\t\t";
+
+    for (int i = 0; i < tableOfConsumers.size(); i++) {
+        std::cout << tableOfConsumers[i] << "\t";
+    }
+    std::cout << ".\n";
+
+    std::cout << "\n\n";
+}
+
+
 // Function to output result of function
 void output_result_of_function() {
     // Greetings
@@ -114,17 +169,32 @@ bool copies_arent_empty(std::vector<float> &copyOfTableManufacturers, std::vecto
     return false;
 }
 
+// Function to find max
+float find_max(int indexesOfMin[], std::vector<std::vector<float>> &copyOfTable) {
+    float max = -1;
+
+    for (int i = 0; i < copyOfTable.size(); i++) {
+        for (int j = 0; j < copyOfTable[i].size(); j++) {
+            if (copyOfTable[i][j] > max) {
+                max = copyOfTable[i][j];
+                indexesOfMin[0] = i;
+                indexesOfMin[1] = j;
+            }
+        }
+    }
+
+    return max;
+}
+
 
 // Function to find min in cost of matrix
-void find_min(int indexesOfMin[]) {
-    float min = table[0][0];
-    indexesOfMin[0] = 0;
-    indexesOfMin[1] = 0;
+void find_min(int indexesOfMin[], std::vector<std::vector<float>> &copyOfTable) {
+    float min = find_max(indexesOfMin, copyOfTable);
 
-    for (int i = 0; i < table.size(); i++) {
-        for (int j = 0; j < table[i].size(); j++) {
-            if (table[i][j] < min) {
-                min = table[i][j];
+    for (int i = 0; i < copyOfTable.size(); i++) {
+        for (int j = 0; j < copyOfTable[i].size(); j++) {
+            if ((copyOfTable[i][j] < min) && (copyOfTable[i][j] != 0))  {
+                min = copyOfTable[i][j];
                 indexesOfMin[0] = i;
                 indexesOfMin[1] = j;
             }
@@ -133,10 +203,28 @@ void find_min(int indexesOfMin[]) {
 }
 
 
-void finding_coefficient(int indexesOfMin[], std::vector<std::vector<float>> &copyOfTable, std::vector<float> &copyOfTableManufacturers, std::vector<float> &copyOfTableConsumers) {
+void finding_coefficient(int indexesOfMin[2], std::vector<std::vector<float>> &copyOfTable, std::vector<float> &copyOfTableManufacturers, std::vector<float> &copyOfTableConsumers) {
     referencePlan[indexesOfMin[0]][indexesOfMin[1]] = std::min(copyOfTableManufacturers[indexesOfMin[0]], copyOfTableConsumers[indexesOfMin[1]]);
 
+    if (copyOfTableManufacturers[indexesOfMin[0]] == copyOfTableConsumers[indexesOfMin[1]]) {
+        for (int i = 0; i < copyOfTable[0].size(); i++) {
+            copyOfTable[indexesOfMin[0]][i] = 0;
+        }
+        for (int i = 0; i < copyOfTable.size(); i++) {
+            copyOfTable[i][indexesOfMin[1]] = 0;
+        }
+    } else if (copyOfTableManufacturers[indexesOfMin[0]] < copyOfTableConsumers[indexesOfMin[1]]) {
+        for (int i = 0; i < copyOfTable[0].size(); i++) {
+            copyOfTable[indexesOfMin[0]][i] = 0;
+        }
+    } else {
+        for (int i = 0; i < copyOfTable.size(); i++) {
+            copyOfTable[i][indexesOfMin[1]] = 0;
+        }
+    }
 
+    copyOfTableManufacturers[indexesOfMin[0]] -= referencePlan[indexesOfMin[0]][indexesOfMin[1]];
+    copyOfTableConsumers[indexesOfMin[1]] -= referencePlan[indexesOfMin[0]][indexesOfMin[1]];
 }
 
 // Function to input required info
@@ -188,6 +276,10 @@ void northwest_corner_method() {
 
     copy_tables_of_manufacturers_and_consumers(copyOfTableManufacturers, copyOfTableConsumers);
 
+    std::vector<std::vector<float>> copyOfTable = table;
+
+    output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
+
     // Creating cycle
     for (int k = 0; k < table.size() + table[0].size() - 1; k++) {
         referencePlan[i][j] = std::min(copyOfTableManufacturers[i], copyOfTableConsumers[j]);
@@ -196,10 +288,18 @@ void northwest_corner_method() {
         copyOfTableConsumers[j] -= referencePlan[i][j];
 
         if (copyOfTableManufacturers[i] == 0) {
+            for (int l = 0; l < table[0].size(); l++) {
+                copyOfTable[i][l] = 0;
+            }
             i++;
         } else {
+            for (int l = 0; l < table.size(); l++) {
+                copyOfTable[l][j] = 0;
+            }
             j++;
         }
+
+        output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
     }
 
     std::cout << "\n\n";
@@ -218,16 +318,25 @@ void minimum_elements_method() {
 
     copy_tables_of_manufacturers_and_consumers(copyOfTableManufacturers, copyOfTableConsumers);
 
-
     std::vector<std::vector<float>> copyOfTable = table;
+
+    output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
 
     // Cycle
     int indexesOfMin[2];
     while (copies_arent_empty(copyOfTableManufacturers, copyOfTableConsumers)) {
-        find_min(indexesOfMin);
+        find_min(indexesOfMin, copyOfTable);
 
         finding_coefficient(indexesOfMin, copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
+
+        output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
     }
+
+    std::cout << "\n\n";
+
+    output_cost_matrix_and_reference_plan();
+
+    output_result_of_function();
 }
 
 
