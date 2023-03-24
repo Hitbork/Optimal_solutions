@@ -110,6 +110,38 @@ void output_cost_matrix_and_reference_plan(std::vector<std::vector<float>> &copy
 }
 
 
+// Function to output table after spacing in Q factor method
+void output_table_after_spacing(std::vector<std::vector<float>> &copyOfTable, std::vector<float> &copyOfManufacturers, std::vector<float> &copyOfConsumers, std::string outputString) {
+    std::cout << "\n " << outputString << "\n";
+
+    for (int i = 0; i < table.size(); i++) {
+        for (int j = 0; j < table[i].size(); j++) {
+            if (copyOfTable[i][j] != 0) {
+                std::cout << copyOfTable[i][j] << "\t";
+            } else {
+                std::cout << "-" << "\t";
+            }
+        }
+
+        if (copyOfManufacturers[i] != 0) {
+            std::cout << copyOfManufacturers[i] << "\n";
+        } else {
+            std::cout << "-" << "\n";
+        }
+    }
+
+    for (int i = 0; i < copyOfConsumers.size(); i++) {
+        if (copyOfConsumers[i] != 0) {
+            std::cout << copyOfConsumers[i] << "\t";
+        } else {
+            std::cout << "-\t";
+        }
+    }
+
+    std::cout << "\n\n";
+}
+
+
 // Function to output result of function
 void output_result_of_function() {
     // Greetings
@@ -226,6 +258,89 @@ void finding_coefficient(int indexesOfMin[2], std::vector<std::vector<float>> &c
     copyOfTableManufacturers[indexesOfMin[0]] -= referencePlan[indexesOfMin[0]][indexesOfMin[1]];
     copyOfTableConsumers[indexesOfMin[1]] -= referencePlan[indexesOfMin[0]][indexesOfMin[1]];
 }
+
+
+// Function to find max elements in row spacing
+std::vector<float> find_maxes_in_rows(std::vector<std::vector<float>> &copyOfTable, std::vector<int> &rowsDeleted, std::vector<int> &colsDeleted, std::vector<int> &remainingRows, std::vector<int> &remainingCols) {
+    std::vector<float> maxElements(copyOfTable.size());
+
+    for (int i = 0; i < copyOfTable.size(); i++) {
+        bool isRowDeleted = false;
+
+        for (int j = 0; j < rowsDeleted.size(); j++) {
+            if (rowsDeleted[j] == i) {
+                isRowDeleted = true;
+                break;
+            }
+        }
+
+        if (isRowDeleted) {
+            maxElements[i] = 0;
+        } else {
+            if (remainingCols.size() == 1) {
+                maxElements[i] = copyOfTable[i][remainingCols[0]];
+            } else {
+                maxElements[i] = copyOfTable[i][remainingCols[0]];
+                for (int j = remainingCols[1]; j < copyOfTable[i].size(); j++) {
+                    bool isColDeleted = false;
+
+                    for (int k = 0; k < colsDeleted.size(); k++) {
+                        if (colsDeleted[k] == j) {
+                            isColDeleted = true;
+                            break;
+                        }
+                    }
+
+                    if (isColDeleted) {
+                        continue;
+                    } else {
+                        if(maxElements[i] < copyOfTable[i][j]) {
+                            maxElements[i] = copyOfTable[i][j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return maxElements;
+}
+
+
+// Function to row spacing in Q factor method
+void row_spacing(std::vector<std::vector<float>> &copyOfTable, std::vector<int> &rowsDeleted, std::vector<int> &colsDeleted, std::vector<int> &remainingRows, std::vector<int> &remainingCols) {
+    std::vector<float> minimalElements = find_maxes_in_rows(copyOfTable, rowsDeleted, colsDeleted, remainingRows, remainingCols);
+
+    for (int i = 0; i < copyOfTable.size(); i++) {
+        bool isRowDeleted = false;
+
+        for (int j = 0; j < rowsDeleted.size(); j++) {
+            if (rowsDeleted[j] == i) {
+                isRowDeleted = false;
+                break;
+            }
+        }
+
+        if (isRowDeleted) {
+            break;
+        }
+
+        if (remainingCols.size() != 1) {
+            for (int j = 1; j < copyOfTable[i].size(); j++) {
+                if (copyOfTable[i][j] < minimalElements[i]) {
+                    minimalElements[i] = copyOfTable[i][j];
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < copyOfTable.size(); i++) {
+        for (int j = 0; j < copyOfTable[i].size(); j++) {
+            copyOfTable[i][j] -= minimalElements[i];
+        }
+    }
+}
+
 
 // Function to input required info
 void input_info() {
@@ -352,7 +467,20 @@ void Q_factor_method() {
 
     output_cost_matrix_and_reference_plan(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers);
 
+    std::vector<int> rowsDeleted, colsDeleted, remainingRows(copyOfTable.size()), remainingCols(copyOfTable[0].size());
+
+    for (int i = 0; i < remainingRows.size(); i++) {
+        remainingRows[i] = i;
+    }
+
+    for (int i = 0; i < remainingCols.size(); i++) {
+        remainingCols[i] = i;
+    }
+
     while (copies_arent_empty(copyOfTableManufacturers, copyOfTableConsumers)) {
+        row_spacing(copyOfTable, rowsDeleted, colsDeleted, remainingRows, remainingCols);
+
+        output_table_after_spacing(copyOfTable, copyOfTableManufacturers, copyOfTableConsumers, "Cost matrix after row spacing:");
 
     }
 }
